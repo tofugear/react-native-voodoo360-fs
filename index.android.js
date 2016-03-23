@@ -10,7 +10,8 @@ import React, {
   Text,
   View,
   Dimensions,
-  ProgressBarAndroid
+  ProgressBarAndroid,
+  TouchableOpacity
 } from 'react-native';
 
 import RCTVoodoo360 from 'react-native-voodoo360';
@@ -62,7 +63,8 @@ let voodoo360fs = React.createClass({
     return {
       index: 0,
       images: [],
-      allLoaded: false
+      allLoaded: false,
+      errMsg: null
     }
   },
 
@@ -95,6 +97,17 @@ let voodoo360fs = React.createClass({
     });
   },
 
+  retryDownloadFiles(){
+    this.setState({errMsg: null})
+    this.startDownloadFiles(this.state.index)
+  },
+
+  startDownloadFiles(index){
+    this.downloadFiles(index, () => {
+        this.setState({allLoaded: true})
+    })
+  },
+
   downloadFiles(index, cb){
     if (index >= IMGS.length){
       cb()
@@ -116,24 +129,36 @@ let voodoo360fs = React.createClass({
         this.downloadFiles(index + 1, cb)
     }).catch((err) => {
       console.log("err", err)
+      this.setState({errMsg: "Something wrong."})
     });
   },
 
   componentDidMount(){
     this.deleteCurrentFiles(0, () => {
-      this.downloadFiles(0, () => {
-        this.setState({allLoaded: true})
-      })
+      this.startDownloadFiles(0)
     })
   },
 
   render() {
-    let overlay;
+    let overlay
+    let errMsgView
     if (!this.state.allLoaded){
+      if (this.state.errMsg){
+        errMsgView = 
+          <View style={styles.errMsgView}>
+            <Text>{this.state.errMsg}</Text>
+            <TouchableOpacity style={styles.retry} onPress={this.retryDownloadFiles}>
+              <Text>Retry</Text>
+            </TouchableOpacity>
+          </View>
+      }
       overlay = 
         <View style={styles.progressContainer}>
-          <ProgressBarAndroid />
-          <Text>{`${this.state.index + 1} / ${IMGS.length}`}</Text>
+          <View style={styles.progressWrapper}>
+            <ProgressBarAndroid />
+            <Text>{`${this.state.index + 1} / ${IMGS.length}`}</Text>
+            {errMsgView}
+          </View>
         </View>
     }
     return (
@@ -153,6 +178,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5FCFF',
   },
+  progressWrapper: {
+    width: SCREEN_WIDTH * 0.8,
+    height: 100,
+    alignItems: 'center'
+  },
   progressContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -169,10 +199,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 10,
   },
+  retry: {
+    height: 25,
+    alignItems: 'center',
+    width: 75
+  },
   instructions: {
     textAlign: 'center',
     color: '#333333',
     marginBottom: 5,
+  },
+  errMsgView: {
+    alignItems: 'center'
   },
   voodoo360: {
     width: SCREEN_WIDTH, 
