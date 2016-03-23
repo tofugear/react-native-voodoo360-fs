@@ -56,9 +56,6 @@ const IMGS = [
 ];
 let SCREEN_HEIGHT = Dimensions.get('window').height
 let SCREEN_WIDTH = Dimensions.get('window').width
-console.log("Dimensions.get('window')", Dimensions.get('window'))
-console.log("SCREEN_WIDTH", SCREEN_WIDTH)
-console.log("SCREEN_HEIGHT", SCREEN_HEIGHT)
 
 let voodoo360fs = React.createClass({
   getInitialState(){
