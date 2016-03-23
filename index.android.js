@@ -64,7 +64,8 @@ let voodoo360fs = React.createClass({
       index: 0,
       images: [],
       allLoaded: false,
-      errMsg: null
+      errMsg: null,
+      action: null
     }
   },
 
@@ -134,7 +135,9 @@ let voodoo360fs = React.createClass({
   },
 
   componentDidMount(){
+    this.setState({action: 'Remove'})
     this.deleteCurrentFiles(0, () => {
+      this.setState({action: 'Download'})
       this.startDownloadFiles(0)
     })
   },
@@ -156,7 +159,7 @@ let voodoo360fs = React.createClass({
         <View style={styles.progressContainer}>
           <View style={styles.progressWrapper}>
             <ProgressBarAndroid />
-            <Text>{`${this.state.index + 1} / ${IMGS.length}`}</Text>
+            <Text>{`${this.state.action} ${this.state.index + 1} / ${IMGS.length}`}</Text>
             {errMsgView}
           </View>
         </View>
