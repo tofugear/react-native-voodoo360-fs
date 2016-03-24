@@ -65,7 +65,8 @@ let voodoo360fs = React.createClass({
       images: [],
       allLoaded: false,
       errMsg: null,
-      action: null
+      action: null,
+      voodoo360Index: 0
     }
   },
 
@@ -142,6 +143,11 @@ let voodoo360fs = React.createClass({
     })
   },
 
+  handleVoodoo360IndexChange(index){
+    console.log("handleVoodoo360IndexChange", index)
+    this.setState({voodoo360Index: index})
+  },
+
   render() {
     let overlay
     let errMsgView
@@ -169,7 +175,9 @@ let voodoo360fs = React.createClass({
         <RCTVoodoo360
           sources={this.state.images}
           style={styles.voodoo360}
+          onIndexChange={this.handleVoodoo360IndexChange}
           />
+        <Text style={styles.voodoo360IndexText}>{`${this.state.voodoo360Index + 1} / ${this.state.images.length}`}</Text>
         {overlay}
       </View>
     );
@@ -221,6 +229,12 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     position: 'absolute'
+  }, 
+  voodoo360IndexText: {
+    position: 'absolute',
+    bottom: 0,
+    width: SCREEN_WIDTH,
+    textAlign: 'center'
   }
 });
 
