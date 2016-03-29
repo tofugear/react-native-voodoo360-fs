@@ -18,6 +18,8 @@ let ReactNativeVoodoo360fsView = React.createClass({
     let overlay
     let errMsgView
     let loadingCountView
+    let resizeMode = this.props.resizeMode ? this.props.resizeMode : 'CENTER_CROP'
+    let downloadText = this.props.downloadText ? this.props.downloadText : 'Download'
     if (!this.props.allLoaded){
       if (this.props.errMsg){
         errMsgView = 
@@ -31,7 +33,7 @@ let ReactNativeVoodoo360fsView = React.createClass({
 
       if (this.props.action == 'Download'){
         loadingCountView = 
-          <Text>{`${this.props.action} ${this.props.index + 1} / ${this.props.imageURIs.length}`}</Text>
+          <Text>{`${downloadText} ${this.props.index + 1} / ${this.props.imageURIs.length}`}</Text>
       }
 
       overlay = 
@@ -49,6 +51,7 @@ let ReactNativeVoodoo360fsView = React.createClass({
           sources={this.props.images}
           style={styles.voodoo360}
           onIndexChange={this.props.onVoodoo360IndexChange}
+          resizeMode={resizeMode}
           />
         <Text style={styles.voodoo360IndexText}>{`${this.props.voodoo360Index + 1} / ${this.props.images.length}`}</Text>
         {overlay}

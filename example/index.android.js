@@ -49,6 +49,8 @@ let app = React.createClass({
 	render(){
 		return <Voodoo360fs
 			imageURIs={IMGS}
+			resizeMode={'CENTER_CROP'}
+			downloadText={'Downloading'}
 			/>
 	}
 })

@@ -195,13 +195,22 @@ let ReactNativeVoodoo360fsContainer = React.createClass({
     })
   },
 
+  handleVoodoo360IndexChange(index){
+    this.setState({voodoo360Index: index})
+    if (this.props.onVoodoo360IndexChange){
+      this.props.onVoodoo360IndexChange(index)
+    }
+  },
+
   render(){
     return (
       <ReactNativeVoodoo360fsView
         {...this.state}
+        resizeMode={this.props.resizeMode}
+        downloadText={this.props.downloadText}
         imageURIs={this.props.imageURIs}
         onRetryDownloadFiles={this.handleRetryDownloadFiles}
-        onVoodoo360IndexChange={this.props.onVoodoo360IndexChange}
+        onVoodoo360IndexChange={this.handleVoodoo360IndexChange}
         />
     )
   }
