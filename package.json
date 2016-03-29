@@ -1,13 +1,25 @@
 {
-  "name": "voodoo360fs",
-  "version": "0.0.1",
-  "private": true,
-  "scripts": {
-    "start": "react-native start"
+  "name": "react-native-voodoo360-fs",
+  "version": "1.0.0",
+  "description": "react-native-voodoo360 with react-native-fs",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
   },
-  "dependencies": {
-    "react-native": "^0.21.0",
-    "react-native-fs": "^1.2.0",
-    "react-native-voodoo360": "github:tofugear/react-native-voodoo360#6l-master"
-  }
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tofugear/react-native-voodoo360-fs.git"
+  },
+  "keywords": [
+    "react-native-voodoo360"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tofugear/react-native-voodoo360-fs/issues"
+  },
+  "homepage": "https://github.com/tofugear/react-native-voodoo360-fs#readme"
 }

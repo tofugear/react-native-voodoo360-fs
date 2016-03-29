@@ -16,6 +16,7 @@ import React, {
 
 import RCTVoodoo360 from 'react-native-voodoo360';
 var RNFS = require('react-native-fs');
+var asyncFunc = require('async')
 
 const IMGS = [
 "https://omnitech-demo-static360.azureedge.net/360/CFWB5005-B_SLB/Lv2/img01.jpg",
@@ -58,7 +59,7 @@ const IMGS = [
 let SCREEN_HEIGHT = Dimensions.get('window').height
 let SCREEN_WIDTH = Dimensions.get('window').width
 
-let voodoo360fs = React.createClass({
+let Voodoo360fs = React.createClass({
   getInitialState(){
     return {
       index: 0,
@@ -70,8 +71,16 @@ let voodoo360fs = React.createClass({
     }
   },
 
+  getBaseFolderName(){
+    return `${RNFS.DocumentDirectoryPath}/voodoo_360`
+  },
+
+  getFolderName(){
+    return `${this.getBaseFolderName()}/CFWB5005-B_SLB`
+  },
+
   getFilename(index){
-    return `/voodoo360_${index}.jpg`
+    return `${this.getFolderName()}/${index}.jpg`
   },
 
   deleteCurrentFiles(index, cb){
@@ -80,7 +89,7 @@ let voodoo360fs = React.createClass({
       return
     }
     this.setState({index: index})
-    var path = RNFS.DocumentDirectoryPath + this.getFilename(index);
+    var path =  this.getFilename(index);
 
     RNFS.unlink(path)
       // spread is a method offered by bluebird to allow for more than a
@@ -99,6 +108,10 @@ let voodoo360fs = React.createClass({
     });
   },
 
+  imagesLoaded(){
+    this.setState({allLoaded: true})
+  },
+
   retryDownloadFiles(){
     this.setState({errMsg: null})
     this.startDownloadFiles(this.state.index)
@@ -106,7 +119,7 @@ let voodoo360fs = React.createClass({
 
   startDownloadFiles(index){
     this.downloadFiles(index, () => {
-        this.setState({allLoaded: true})
+        this.imagesLoaded()
     })
   },
 
@@ -116,30 +129,123 @@ let voodoo360fs = React.createClass({
       return
     }
     this.setState({index: index})
-    let filepath = RNFS.DocumentDirectoryPath + this.getFilename(index)
-    console.log("filepath", filepath)
-    RNFS.downloadFile(IMGS[index], filepath, 
-      (res) => {
-        console.log("begin", res)
-      }, (res) => {
-        console.log("process", res)
-      }).then(res => {
-        console.log("success", res)
-        let images = this.state.images.slice(0)
-        images.push(filepath)
-        this.setState({images: images})
-        this.downloadFiles(index + 1, cb)
-    }).catch((err) => {
-      console.log("err", err)
-      this.setState({errMsg: "Something wrong."})
-    });
+    let filepath = this.getFilename(index)
+
+    let successFunc = () => {
+      let images = this.state.images.slice(0)
+      images.push(filepath)
+      this.setState({images: images})
+      this.downloadFiles(index + 1, cb)
+    }
+
+    RNFS.exists(filepath).then(result => {
+      if (result){
+        console.log("file exist, skip file")
+        successFunc()
+      } else {
+        console.log("file not exist, download file")
+        RNFS.downloadFile(IMGS[index], filepath, 
+          (res) => {
+            console.log("begin", res)
+          }, (res) => {
+            console.log("process", res)
+          }).then(res => {
+            successFunc()
+        }).catch((err) => {
+          console.log("err", err)
+          this.setState({errMsg: "Something wrong."})
+        });
+      }
+    })
   },
 
   componentDidMount(){
-    this.setState({action: 'Remove'})
-    this.deleteCurrentFiles(0, () => {
-      this.setState({action: 'Download'})
-      this.startDownloadFiles(0)
+    asyncFunc.waterfall([
+      // create base folder
+      (cb) => {
+        RNFS.mkdir(this.getBaseFolderName()).then(result => {
+          console.log("mkdir", result[0])
+          console.log("mkdir", result[1])
+          if (result[0]){
+            cb(null)
+          } else {
+            cb("Cannot create base folder")
+          }
+        })
+      }, 
+      // check item folder exist
+      (cb) => {
+        RNFS.exists(this.getFolderName()).then(result => {
+          cb(null, result)
+        })
+      },
+      // check folders number >= 3
+      (folderExist, cb) => {
+        // if (folderExist)
+        if (folderExist){ // debug
+          cb(null, null)
+        } else {
+          RNFS.readDir(this.getBaseFolderName()).then(result => {
+            console.log("readDir", result)
+            if (result.length >=3){
+            // if (true){ // debug
+              cb(null, result[0].path)
+            } else {
+              cb(null, null)
+            }
+          })
+        }
+      },
+      // delete folder
+      (path, cb) => {
+        if (path){
+          RNFS.unlink(path).then(result => {
+            console.log("unline", result)
+            cb(null)
+          })
+        } else {
+          cb(null)
+        }
+      },
+      // create folder
+      (cb) => {
+        RNFS.mkdir(this.getFolderName()).then(result => {
+          console.log("create folder", result)
+          if (result[0]){
+            cb(null)
+          } else {
+            cb("Cannot create product folder")
+          }
+        })
+      },
+      // check images exist
+      (cb) => {
+        RNFS.readDir(this.getFolderName()).then(result => {
+          console.log("files", result)
+          if (result.length == 36){
+            let images = result.map((file) => {
+              return file.path
+            })
+            this.setState({images: images})
+            cb(null, false)
+          } else {
+            cb(null, true)
+          }
+        })
+      },
+    ], (err, result) => {
+      if (err){
+        console.log("Init images fail", err)
+      } else {
+        console.log("Done", result)
+        // download files
+        if(result){
+          this.setState({action: 'Download'})
+          this.startDownloadFiles(0)
+        } else {
+          this.imagesLoaded()
+        }
+      }
     })
   },
 
@@ -151,6 +257,7 @@ let voodoo360fs = React.createClass({
   render() {
     let overlay
     let errMsgView
+    let loadingCountView
     if (!this.state.allLoaded){
       if (this.state.errMsg){
         errMsgView = 
@@ -161,11 +268,17 @@ let voodoo360fs = React.createClass({
             </TouchableOpacity>
           </View>
       }
+
+      if (this.state.action == 'Download'){
+        loadingCountView = 
+          <Text>{`${this.state.action} ${this.state.index + 1} / ${IMGS.length}`}</Text>
+      }
+
       overlay = 
         <View style={styles.progressContainer}>
           <View style={styles.progressWrapper}>
             <ProgressBarAndroid />
-            <Text>{`${this.state.action} ${this.state.index + 1} / ${IMGS.length}`}</Text>
+            {loadingCountView}
             {errMsgView}
           </View>
         </View>
@@ -238,4 +351,4 @@ const styles = StyleSheet.create({
   }
 });
 
-AppRegistry.registerComponent('voodoo360fs', () => voodoo360fs);
+module.exports = Voodoo360fs
