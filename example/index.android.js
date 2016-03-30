@@ -52,6 +52,7 @@ let app = React.createClass({
 			resizeMode={'CENTER_CROP'}
 			downloadText={'Downloading'}
 			folderName={'CFWB5005-B_SLB'}
+			onImagesLoaded={() => console.log("all loaded")}
 			/>
 	}
 })

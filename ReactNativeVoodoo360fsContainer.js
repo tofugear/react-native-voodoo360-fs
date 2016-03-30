@@ -31,6 +31,9 @@ let ReactNativeVoodoo360fsContainer = React.createClass({
 
   imagesLoaded(){
     this.setState({allLoaded: true})
+    if (this.props.onImagesLoaded){
+      this.props.onImagesLoaded()
+    }
   },
 
   handleRetryDownloadFiles(){
