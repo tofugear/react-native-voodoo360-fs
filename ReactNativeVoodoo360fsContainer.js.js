@@ -22,7 +22,7 @@ let ReactNativeVoodoo360fsContainer = React.createClass({
   },
 
   getFolderName(){
-    return `${this.getBaseFolderName()}/CFWB5005-B_SLB`
+    return `${this.getBaseFolderName()}/${this.props.folderName}`
   },
 
   getFilename(index){
@@ -110,8 +110,7 @@ let ReactNativeVoodoo360fsContainer = React.createClass({
       // create base folder
       (cb) => {
         RNFS.mkdir(this.getBaseFolderName()).then(result => {
-          console.log("mkdir", result[0])
-          console.log("mkdir", result[1])
+          console.log("Create Base Folder", result[0])
           if (result[0]){
             cb(null)
           } else {
@@ -146,7 +145,7 @@ let ReactNativeVoodoo360fsContainer = React.createClass({
       (path, cb) => {
         if (path){
           RNFS.unlink(path).then(result => {
-            console.log("unline", result)
+            console.log("Delete folder", result)
             cb(null)
           })
         } else {
@@ -156,7 +155,7 @@ let ReactNativeVoodoo360fsContainer = React.createClass({
       // create folder
       (cb) => {
         RNFS.mkdir(this.getFolderName()).then(result => {
-          console.log("create folder", result)
+          console.log("Create folder", result)
           if (result[0]){
             cb(null)
           } else {

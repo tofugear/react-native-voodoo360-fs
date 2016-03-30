@@ -51,6 +51,7 @@ let app = React.createClass({
 			imageURIs={IMGS}
 			resizeMode={'CENTER_CROP'}
 			downloadText={'Downloading'}
+			folderName={'CFWB5005-B_SLB'}
 			/>
 	}
 })
