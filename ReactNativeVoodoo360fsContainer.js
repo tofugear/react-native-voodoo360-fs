@@ -29,31 +29,6 @@ let ReactNativeVoodoo360fsContainer = React.createClass({
     return `${this.getFolderName()}/${index}.jpg`
   },
 
-  deleteCurrentFiles(index, cb){
-    if (index >= this.props.imageURIs.length){
-      cb()
-      return
-    }
-    this.setState({index: index})
-    var path =  this.getFilename(index);
-
-    RNFS.unlink(path)
-      // spread is a method offered by bluebird to allow for more than a
-      // single return value of a promise. If you use `then`, you will receive
-      // the values inside of an array
-      .spread((success, path) => {
-        console.log('FILE DELETED', success, path)
-        this.deleteCurrentFiles(index + 1, cb)
-      })
-      // `unlink` will throw an error, if the item to unlink does not exist
-      .catch((err) => {
-        console.log(err.message)
-        if (err.message == 'File does not exist'){
-          this.deleteCurrentFiles(index + 1, cb)
-        }
-    });
-  },
-
   imagesLoaded(){
     this.setState({allLoaded: true})
   },
