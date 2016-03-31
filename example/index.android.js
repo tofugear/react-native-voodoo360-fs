@@ -1,5 +1,8 @@
 import React, {
   AppRegistry,
+  View,
+  StyleSheet,
+  Text
 } from 'react-native'
 
 let Voodoo360fs = require('react-native-voodoo360-fs')
@@ -43,17 +46,52 @@ const IMGS = [
 "https://omnitech-demo-static360.azureedge.net/360/CFWB5005-B_SLB/Lv2/img36.jpg"
 ];
 
-console.log("Voodoo360fs", Voodoo360fs)
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1
+	},
+	voodoo360: {
+		flex: 1
+	},
+	stopButton: {
+		position: 'absolute',
+		right: 15,
+		top: 15
+	}
+})
 
 let app = React.createClass({
+	getInitialState(){
+		return {
+			show: true
+		}
+	},
+
+	handleStopDownload(){
+		console.log("handleStopDownload")
+		this.setState({show: false})
+	},
+
 	render(){
-		return <Voodoo360fs
-			imageURIs={IMGS}
-			resizeMode={'CENTER_CROP'}
-			downloadText={'Downloading'}
-			folderName={'CFWB5005-B_SLB'}
-			onImagesLoaded={() => console.log("all loaded")}
-			/>
+		let voodoo360View
+		if (this.state.show){
+			voodoo360View = 
+				<Voodoo360fs
+					style={styles.voodoo360}
+					imageURIs={IMGS}
+					resizeMode={'CENTER_CROP'}
+					downloadText={'Downloading'}
+					folderName={'CFWB5005-B_SLB'}
+					onImagesLoaded={() => console.log("all loaded")}
+					/>
+		}
+		return (
+			<View style={styles.container}>
+				{voodoo360View}
+				<Text style={styles.stopButton} onPress={this.handleStopDownload}>Stop</Text>
+			</View>
+		)
 	}
 })
 

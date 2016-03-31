@@ -46,7 +46,7 @@ let ReactNativeVoodoo360fsView = React.createClass({
         </View>
     }
     return (
-      <View style={styles.container}>
+      <View style={this.props.style}>
         <RCTVoodoo360
           sources={this.props.images}
           style={styles.voodoo360}
@@ -64,17 +64,12 @@ let SCREEN_HEIGHT = Dimensions.get('window').height
 let SCREEN_WIDTH = Dimensions.get('window').width
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5FCFF',
-  },
   progressWrapper: {
     width: SCREEN_WIDTH * 0.8,
     height: 100,
     alignItems: 'center'
   },
   progressContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
@@ -103,15 +98,11 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   voodoo360: {
-    width: SCREEN_WIDTH, 
-    height: SCREEN_HEIGHT,
-    top: 0,
-    left: 0,
-    position: 'absolute'
+    flex: 1
   }, 
   voodoo360IndexText: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 5,
     width: SCREEN_WIDTH,
     textAlign: 'center'
   }

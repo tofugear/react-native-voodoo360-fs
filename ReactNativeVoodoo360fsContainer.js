@@ -48,6 +48,9 @@ let ReactNativeVoodoo360fsContainer = React.createClass({
   },
 
   downloadFiles(index, cb){
+    if (!this.isMounted()){
+      return
+    }
     if (index >= this.props.imageURIs.length){
       cb()
       return
@@ -183,6 +186,7 @@ let ReactNativeVoodoo360fsContainer = React.createClass({
     return (
       <ReactNativeVoodoo360fsView
         {...this.state}
+        style={this.props.style}
         resizeMode={this.props.resizeMode}
         downloadText={this.props.downloadText}
         imageURIs={this.props.imageURIs}
